@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import { Profile } from "../models/profile.model.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { mailSender } from "../utils/mailSender.js";
 dotenv.config({
   path: "./env",
 });
@@ -157,14 +158,13 @@ export const logIn = async (req, res) => {
       const payload = {
         email: user.email,
         id: user._id,
-        role: user.role,
+        role: user.accountType,
       };
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: "2h",
       });
       user = user.toObject();
       user.token = token;
-      user.password = undefined;
       const option = {
         expires: Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
       }
@@ -187,3 +187,51 @@ export const logIn = async (req, res) => {
     });
   }
 };
+
+export const changePassword = async (req, res) => {
+    try {
+        const {email, password, newPassword, confirmNewPasword} = req.body
+        if(!email || !password || !newPassword || !confirmNewPasword){
+            return res.status(400).json({
+                success: false,
+                msg: "All fields are required"
+            })
+        }
+        let user = await User.findOne({email})
+        if(!user){
+            return res.status(400).json({
+                success: false,
+                msg: "User is not registered"
+            })
+        }
+        if(newPassword !== confirmNewPasword){
+            return res.status(400).json({
+                success: false,
+                msg: "Does not match new password and confirm new password"
+            })
+        }
+        if(await bcrypt.compare(password, user.password)){
+            let hashedNewPass = await bcrypt(newPassword, 10)
+            user.password = hashedNewPass
+            const mailResponse  = await mailSender(email, "Password Changed Successfully", hashedNewPass)
+            console.log("Email sent Successfully: ", mailResponse)
+            return res.status(200).json({
+                success: true,
+                msg: "Password Changed Successfully",
+                data: user
+            })
+        }
+        else{
+            return res.status(400).json({
+                success: false,
+                msg: "User is not registered"
+            })
+        }
+    } catch (error) {
+        console.log(error.message)
+        res.status(500).json({
+            success: false,
+            msg: "Error while changing password"
+        })
+    }
+}

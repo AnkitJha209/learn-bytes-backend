@@ -39,6 +39,12 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    resetToken: {
+        type: String,
+    },
+    resetExpires: {
+        type: Date
+    },
     courseProgress: [
         {
             type: Schema.Types.ObjectId,
