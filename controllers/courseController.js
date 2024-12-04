@@ -1,13 +1,13 @@
-import { Tag } from "../models/tag.model.js";
 import {Course} from "../models/course.model.js"
 import { User } from "../models/user.model.js";
 import { uploadImgCloud } from "../utils/imageUploader.js";
+import { Category } from "../models/category.model.js";
 
 export const createCourse = async (req, res) => {
     try {
         // data fetching 
         // const {id} = req.User
-        const{courseName, courseDesc, whatYouWillLearn, price, tag} = req.body
+        const{courseName, courseDesc, whatYouWillLearn, price, tag, category} = req.body
         const thumbnail = req.files.thumbnailImg;
         // validation of data
         if(!courseName || !courseDesc || !whatYouWillLearn || !price || !tag || !thumbnail){
@@ -28,11 +28,11 @@ export const createCourse = async (req, res) => {
             })
         }
 
-        const tagDetails = await Tag.findById({tag});
-        if(!tagDetails){
+        const categoryDetails = await Category.findById({category});
+        if(!categoryDetails){
             return res.status(404).json({
                 success: false,
-                msg: "Tag Details not Found"
+                msg: "Category Details not Found"
             })
         }
 
@@ -56,8 +56,8 @@ export const createCourse = async (req, res) => {
             {new: true}
         )
 
-        await Tag.findByIdAndUpdate(
-            {_id: tagDetails._id},
+        await Category.findByIdAndUpdate(
+            {_id: categoryDetails._id},
             {$push : {courses : newCourse._id}},
             {new: true}
         )
@@ -75,5 +75,26 @@ export const createCourse = async (req, res) => {
             msg: "Failed to create Course",
         })
         
+    }
+}
+
+export const getAllCourses = async (req, res) => {
+    try {
+        const allCourse = await Course.find(
+            {},
+            {courseName: true,
+                price: true,
+                thumbnail: true,
+                instructor: true,
+                ratingAndReviews: true,
+                studentsEnrolled: true,
+            }
+        ).populate("instructor").exec();
+    } catch (error) {
+        console.log(error.message)
+        return res.status(500).json({
+            success: false,
+            msg: "Failed to Get Courses",
+        }) 
     }
 }

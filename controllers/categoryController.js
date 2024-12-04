@@ -1,6 +1,6 @@
-import { Tag } from "../models/tag.model.js";
+import { Category } from "../models/category.model.js";
 
-export const createTag = async (req, res) => {
+export const createCategory = async (req, res) => {
     try {
         const {name, desc} = req.body
 
@@ -11,23 +11,23 @@ export const createTag = async (req, res) => {
             }) 
         }
 
-        const isPresent = await Tag.findOne({name})
+        const isPresent = await Category.findOne({name})
         if(isPresent){
             return res.status(402).json({
                 success: false, 
-                msg: "Tag Already Present"
+                msg: "Category Already Present"
             })
         } 
 
-        const tagDetails = await Tag.create({
+        const categoryDetails = await Category.create({
             name,
             desc
         })
 
         return res.status(200).json({
             success: true,
-            msg: "Tag Created Successfully",
-            tagDetails
+            msg: "Category Created Successfully",
+            categoryDetails
         })
         
     } catch (error) {
@@ -39,19 +39,19 @@ export const createTag = async (req, res) => {
     }
 }
 
-export const getAllTags = async (req, res) => {
+export const getAllCategory = async (req, res) => {
     try {
-        const allTags = await Tag.find({},{name:true, desc: true})
+        const allCategory = await Category.find({},{name:true, desc: true})
         return res.status(200).json({
             success: true, 
-            msg: "All Tags Returned Successfully",
-            allTags
+            msg: "All Category Returned Successfully",
+            allCategory
         })
     } catch (error) {
         console.log(error.message)
         return res.status(500).json({
             success: false, 
-            msg: "Error while creating tag"
+            msg: "Error while creating Category"
         })
     }
 }

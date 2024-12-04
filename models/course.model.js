@@ -39,14 +39,18 @@ const courseSchema = new Schema({
         type: String,
         required: true,
     },
-    tags: {
+    category: {
         type: Schema.Types.ObjectId,
-        ref: "Tag",
+        ref: "Category",
     },
-    studentsEnrolled : {
+    tags: {
+        type: String,
+        required: true,
+    },
+    studentsEnrolled : [{
         type: Schema.Types.ObjectId,
         ref: "User",
-    }
+    }]
 },{timestamps: true})
 
 export const Course = mongoose.model("Course", courseSchema)

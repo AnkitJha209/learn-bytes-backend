@@ -28,12 +28,10 @@ const userSchema = new Schema({
     additionalDetail : {
         type : Schema.Types.ObjectId,
         ref: "Profile",
-        required: true,
     },
     courses : [{
         type: Schema.Types.ObjectId,
         ref: "Course",
-        required: true
     }],
     image: {
         type: String,
