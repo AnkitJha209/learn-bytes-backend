@@ -165,6 +165,7 @@ export const logIn = async (req, res) => {
       });
       user = user.toObject();
       user.token = token;
+      user.password = undefined
       const option = {
         expires: Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
       }
