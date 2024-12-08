@@ -4,9 +4,9 @@ dotenv.config({
     path: './env'
 })
 
-export const connectDB = () => {
+export const connectDB = async () => {
     try{
-        const connectionInstance = mongoose.connect(process.env.DB_URI)
+        const connectionInstance = await mongoose.connect(process.env.DB_URL)
         console.log("Connected to DB Successfully", connectionInstance.connection.host)
 
     }catch(err){

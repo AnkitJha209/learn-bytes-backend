@@ -1,6 +1,6 @@
 import { User } from "../models/user.model.js";
 import dotenv from "dotenv";
-import { mailSender } from "../utils/mailSender.js";
+import { sendMail } from "../utils/mailSender.js";
 import bcrypt from 'bcrypt'
 
 dotenv.config({

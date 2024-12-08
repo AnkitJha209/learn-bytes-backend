@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import { Profile } from "../models/profile.model.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { mailSender } from "../utils/mailSender.js";
+import { sendMail } from "../utils/mailSender.js";
 dotenv.config({
   path: "./env",
 });

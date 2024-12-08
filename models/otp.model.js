@@ -1,5 +1,5 @@
 import mongoose, {Schema} from "mongoose";
-import { mailSender } from "../utils/mailSender";
+import  {sendMail}  from "../utils/mailSender.js";
 
 const otpSchema = new Schema({
     email: {
@@ -17,9 +17,9 @@ const otpSchema = new Schema({
     }
 })
 
-async function sendVerificationEmail(email, otp) {
+ function sendVerificationEmail(email, otp) {
     try{
-        const mailResponse  = await mailSender(email, "Verification Email From LearnBytes", otp)
+        const mailResponse  = mailSender(email, "Verification Email From LearnBytes", otp)
         console.log("Email sent Successfully: ", mailResponse)
 
     }catch(err){
@@ -28,8 +28,8 @@ async function sendVerificationEmail(email, otp) {
     }
 }
 
-otpSchema.pre("save",async function(next){
-    await sendVerificationEmail(this.email, this.otp);
+otpSchema.pre("save", function(next){
+    sendVerificationEmail(this.email, this.otp);
     next();
 } )
 

@@ -1,6 +1,6 @@
 import { SubSection } from "../models/subsection.model.js";
 import { Section } from "../models/section.model.js";
-import { uploadImgCloud } from "../utils/imageUploader";
+import { uploadImgCloud } from "../utils/imageUploader.js";
 import dotenv from 'dotenv'
 dotenv.config({
     path: './env'
