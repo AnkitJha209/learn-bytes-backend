@@ -55,3 +55,43 @@ export const getAllCategory = async (req, res) => {
         })
     }
 }
+
+export const categoryPageDetails = async (req, res) => {
+    try{
+        const {categoryId} = req.body
+        if(!categoryId){
+            return res.status(500).json({
+                success: false,
+                msg: "Details Required"
+            })
+        }
+
+        const selectedCategory = await Category.findById({categoryId})
+                                        .populate("courses")
+                                        .exec();
+        if(!selectedCategory){
+            return res.status(500).json({
+                success: false,
+                msg: "Data not found"
+            })
+        }
+
+        const differentCategory = await Category.find({_id: {$ne : categoryId}}).populate("courses").exec();
+
+        // const topSellingCourses = await  
+        return res.status(200).json({
+            success: true,
+            data: {
+                selectedCategory,
+                differentCategory
+            }
+        })
+
+    }catch(err){
+        return res.status(400).json({
+            success: false,
+            msg: "Error while get details"
+        })
+    }
+
+}

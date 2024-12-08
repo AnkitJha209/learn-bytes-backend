@@ -44,7 +44,7 @@ const courseSchema = new Schema({
         ref: "Category",
     },
     tags: {
-        type: String,
+        type: [String],
         required: true,
     },
     studentsEnrolled : [{
