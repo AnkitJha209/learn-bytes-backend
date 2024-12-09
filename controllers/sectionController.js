@@ -1,5 +1,6 @@
 import { Section } from "../models/section.model.js";
 import {Course} from '../models/course.model.js'
+import mongoose, { mongo } from "mongoose";
 
 
 export const createSection = async (req, res) => {
@@ -12,9 +13,10 @@ export const createSection = async (req, res) => {
             })
         }
         const newSection = await Section.create({sectionName})
-        
+        console.log(newSection)
+        const cId = new mongoose.Types.ObjectId(courseId)
         const updatedCourseDetails = await Course.findByIdAndUpdate(
-            {courseId},
+            {_id: cId},
             {$push : {courseContent: newSection._id}},
             {new: true}
         ).populate("courseContent").exec();
@@ -45,8 +47,9 @@ export const updateSection = async (req, res) => {
                 msg: "All Fields are required",
             })
         }
+        const secId = new mongoose.Types.ObjectId(sectionId)
 
-        const section = await Section.findByIdAndUpdate({sectionId},
+        const section = await Section.findByIdAndUpdate({_id: secId},
             {sectionName: newName},
             {new: true},
         ) 
@@ -81,15 +84,14 @@ export const deleteSection = async (req, res) => {
         //     {$pop : {courseContent : section._id}}
         // )
 
-        const {sectionId} = req.params
-        await Section.findByIdAndDelete({sectionId})
+        const {sectionId} = req.body
+        const secId = new mongoose.Types.ObjectId(sectionId)
+        await Section.findByIdAndDelete({_id: secId})
         return res.status(200).json({
             success: true,
             msg: "Deleted Section Successfully",
             // section
         })
-
-        
     } catch (error) {
         console.log(error.message)
         return res.status(500).json({

@@ -2,6 +2,7 @@ import { SubSection } from "../models/subsection.model.js";
 import { Section } from "../models/section.model.js";
 import { uploadImgCloud } from "../utils/imageUploader.js";
 import dotenv from 'dotenv'
+import mongoose from "mongoose";
 dotenv.config({
     path: './env'
 })
@@ -26,8 +27,9 @@ export const createSubSection = async (req, res) => {
         videoUrl : uploadDetails.secure_url
     })
 
+    const secId = new mongoose.Types.ObjectId(sectionId)
     const updateSectionDetails = await Section.findByIdAndUpdate(
-        {sectionId},
+        {_id: secId},
         {$push: {subSection: subsectionDetails}},
         {new: true}
     ).populate("subSection").exec();
@@ -61,8 +63,8 @@ export const updateSubSection = async (req, res) => {
         }
 
         const uploadDetails = await uploadImgCloud(video, process.env.FOLDER_NAME) 
-
-        const updatedSubSection = await SubSection.findByIdAndUpdate({subSectionId},
+        const subSecId = new mongoose.Types.ObjectId(subSectionId)
+        const updatedSubSection = await SubSection.findByIdAndUpdate({_id: subSecId},
             {title, description, timeDuration, videoUrl: uploadDetails.secure_url},
             {new: true}
         )
@@ -83,8 +85,8 @@ export const updateSubSection = async (req, res) => {
 export const deleteSubSection = async (req, res) => {
     try {
         const {subSectionId} = req.params;
-
-        await SubSection.findByIdAndDelete({subSectionId})
+        const subSecId = new mongoose.Types.ObjectId(subSectionId)
+        await SubSection.findByIdAndDelete({_id: subSecId})
 
         return res.status(200).json({
             success: true,
