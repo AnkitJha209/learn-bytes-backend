@@ -16,7 +16,7 @@ courseRoutes.get("/get-category-details", categoryPageDetails)
 
 
 courseRoutes.get("/get-all-courses", getAllCourses)
-courseRoutes.get("get-course-details", getCourseDetails)
+courseRoutes.get("/get-course-details", getCourseDetails)
 
 courseRoutes.post("/create-course", auth, isInstructor, createCourse)
 courseRoutes.post("/create-section", auth, isInstructor, createSection)

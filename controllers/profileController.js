@@ -1,3 +1,4 @@
+import mongoose, { mongo } from "mongoose";
 import { Profile } from "../models/profile.model.js";
 import {User} from "../models/user.model.js";
 
@@ -12,11 +13,11 @@ export const updateProfile = async (req, res) => {
                 msg: "All Fields are required"
             })
         }
-
-        const userDetails = await User.findById({userId})
+        const uId = new mongoose.Types.ObjectId(userId)
+        const userDetails = await User.findById({_id: uId})
         const profileId = userDetails.additionalDetail;
 
-        const profileDetails = await Profile.findById({profileId})
+        const profileDetails = await Profile.findById({_id:profileId})
 
         profileDetails.dateOfBirth = dateOfBirth
         profileDetails.about = about
@@ -49,18 +50,18 @@ export const deleteAccount = async (req, res) => {
                 msg: "All Fields are required"
             })
         }
-
-        const user = await User.findById({userId})
+        const uId = new mongoose.Types.ObjectId(userId)
+        const user = await User.findById({_id: uId})
         if(!user){
             return res.status(404).json({
                 success: false,
-                msg: "User not fount"
+                msg: "User not found"
             })
         }
+        const profileId = new mongoose.Types.ObjectId(user.additionalDetail)
+        await Profile.findByIdAndDelete({_id: profileId})
 
-        await Profile.findByIdAndDelete({_id: user.additionalDetail})
-
-        await User.findByIdAndDelete({_id: id});
+        await User.findByIdAndDelete({_id: uId});
 
         return res.status(200).json({
             success: true,
@@ -75,7 +76,8 @@ export const deleteAccount = async (req, res) => {
 export const getAllUserDetails = async (req, res) => {
     try {
         const id = req.user.id
-        const user = await User.findById({id}).populate("additionalDetail").exec();
+        const objId = new mongoose.Types.ObjectId(id)
+        const user = await User.findById({_id: objId}).populate("additionalDetail").exec();
         if(!user){
             return res.status(400).json({
                 success: false,

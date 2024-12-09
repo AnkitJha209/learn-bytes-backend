@@ -2,6 +2,7 @@ import { Course } from "../models/course.model.js";
 import { User } from "../models/user.model.js";
 import { uploadImgCloud } from "../utils/imageUploader.js";
 import { Category } from "../models/category.model.js";
+import mongoose from "mongoose";
 
 export const createCourse = async (req, res) => {
   try {
@@ -26,7 +27,10 @@ export const createCourse = async (req, res) => {
     }
     // instructor db call
     const userID = req.user.id;
-    const instructorDetails = await User.findById({ userID });
+    console.log(userID)
+    const uId = new mongoose.Types.ObjectId(userID)
+    console.log(uId)
+    const instructorDetails = await User.findById({ _id: uId });
     console.log(instructorDetails);
     if (!instructorDetails) {
       return res.status(404).json({
@@ -35,7 +39,8 @@ export const createCourse = async (req, res) => {
       });
     }
 
-    const categoryDetails = await Category.findById({ category });
+    const categoryId = new mongoose.Types.ObjectId(category)
+    const categoryDetails = await Category.findById({ _id: categoryId });
     if (!categoryDetails) {
       return res.status(404).json({
         success: false,
@@ -54,7 +59,8 @@ export const createCourse = async (req, res) => {
       instructor: instructorDetails._id,
       whatYouWillLearn: whatYouWillLearn,
       price,
-      tag: tagDetails._id,
+      category: categoryDetails._id,
+      tag,
       thumbnail: thumbnailImg.secure_url,
     });
 
@@ -95,11 +101,13 @@ export const getAllCourses = async (req, res) => {
         price: true,
         thumbnail: true,
         instructor: true,
+        category: true,
         ratingAndReviews: true,
         studentsEnrolled: true,
       }
     )
       .populate("instructor")
+      .populate("category")
       .exec();
     return res.status(200).json({
       success: true,
@@ -118,14 +126,16 @@ export const getAllCourses = async (req, res) => {
 export const getCourseDetails = async (req, res) => {
   try {
     const { courseId } = req.body;
-    const courseDetails = await Course.findById({ courseId })
+    console.log(courseId);
+    let cId = new mongoose.Types.ObjectId(courseId)
+    const courseDetails = await Course.findById({ _id: cId })
       .populate({
         path: "instructor",
         populate: {
             path: "additionalDetail"
         }
       })
-      .populate("categroy")
+      .populate("category")
       .populate("ratingAndReviews")
       .populate({
         path: "courseContent",

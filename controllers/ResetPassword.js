@@ -31,10 +31,11 @@ export const resetPasswordToken = async (req, res) => {
         {new: true}
     )
     const url = `http://localhost:3000/update-password/${resetToken}`
-    await mailSender(email, "Password Reset Link", `Password Reset Link: ${url}`)
+    await sendMail(email, "Password Reset Link", `Password Reset Link: ${url}`)
 
     return res.status(200).json({
         success: true,
+        resetToken,
         message: "Email Sent Successfully Please Check Your Mail Box"
     })
 
@@ -67,6 +68,7 @@ export const resetPassword = async (req, res) => {
               });
         }
         const user = await User.findOne({resetToken})
+        console.log(user)
         if(!user){
             return res.status(500).json({
                 success: false,
@@ -79,10 +81,18 @@ export const resetPassword = async (req, res) => {
                 msg: "Link Expired",
               });
         }
-        let hashedPass = await bcrypt(password, 10);
+        let hashedPass = await bcrypt.hash(password, 10);
         user.password = hashedPass
+        const updateUser = await User.findByIdAndUpdate(
+          {_id: user._id},
+          {password: hashedPass},
+          {new: true}
+        )
+        console.log("-->",user)
+        console.log("updated user", updateUser)
         return res.status(200).json({
             success: true,
+            updateUser,
             msg: "Password Changed Successfully",
           });
     } catch (error) {

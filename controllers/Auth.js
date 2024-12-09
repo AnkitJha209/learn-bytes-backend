@@ -14,7 +14,7 @@ export const sentOTP = async (req, res) => {
   try {
     const { email } = req.body;
     let user = await User.findOne({ email });
-    if (user) {
+    if(user) {
       return res.status(400).json({
         success: false,
         msg: "User Already Exist",
@@ -40,7 +40,7 @@ export const sentOTP = async (req, res) => {
       email,
       otp,
     });
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       msg: "OTP sent Successfully",
       data,
@@ -97,14 +97,14 @@ export const signUp = async (req, res) => {
         success: false,
         msg: "OTP Not Found",
       });
-    } else if ((otp !== dbOtp, otp)) {
+    } else if ((otp !== dbOtp[0].otp)) {
       return res.status(400).json({
         success: false,
         msg: "Invalid Otp",
       });
     }
 
-    const hashPass = await bcrypt(password, 10);
+    const hashPass = await bcrypt.hash(password, 10);
 
     const profileDetails = await Profile.create({
       gender: null,
@@ -121,7 +121,7 @@ export const signUp = async (req, res) => {
       password: hashPass,
       accountType,
       additionalDetail: profileDetails._id,
-      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstname} ${lastName}`,
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstName} ${lastName}`,
     });
     return res.status(200).json({
       success: true,
@@ -129,7 +129,7 @@ export const signUp = async (req, res) => {
       newUser,
     });
   } catch (err) {
-    console.error(error.message);
+    console.error(err.message);
     return res.status(500).json({
       success: false,
       msg: "Error while signing up",
@@ -147,6 +147,7 @@ export const logIn = async (req, res) => {
       });
     }
     let user = await User.findOne({ email });
+    console.log(user)
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -167,7 +168,7 @@ export const logIn = async (req, res) => {
       user.token = token;
       user.password = undefined
       const option = {
-        expires: Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+        expire: Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
       }
       return res.cookie("token", token, option).status(200).json({
         success: true,
@@ -214,7 +215,7 @@ export const changePassword = async (req, res) => {
         if(await bcrypt.compare(password, user.password)){
             let hashedNewPass = await bcrypt(newPassword, 10)
             user.password = hashedNewPass
-            const mailResponse  = await mailSender(email, "Password Changed Successfully", hashedNewPass)
+            const mailResponse  = await sendMail(email, "Password Changed Successfully", hashedNewPass)
             console.log("Email sent Successfully: ", mailResponse)
             return res.status(200).json({
                 success: true,

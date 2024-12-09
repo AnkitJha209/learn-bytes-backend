@@ -19,7 +19,7 @@ const otpSchema = new Schema({
 
  function sendVerificationEmail(email, otp) {
     try{
-        const mailResponse  = mailSender(email, "Verification Email From LearnBytes", otp)
+        const mailResponse  = sendMail(email, "Verification Email From LearnBytes", otp)
         console.log("Email sent Successfully: ", mailResponse)
 
     }catch(err){
