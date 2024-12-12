@@ -92,6 +92,39 @@ export const createCourse = async (req, res) => {
   }
 };
 
+export const getAllCoursesByCategory = async (req, res) => {
+  try {
+    const {catalogName} = req.params
+    console.log(catalogName)
+    const allCourse = await Course.find(
+      {category : catalogName},
+      {
+        courseName: true,
+        price: true,
+        thumbnail: true,
+        instructor: true,
+        category: true,
+        ratingAndReviews: true,
+        studentsEnrolled: true,
+      }
+    )
+      .populate("instructor")
+      .populate("category")
+      .exec();
+    return res.status(200).json({
+      success: true,
+      msg: "All Courses are here",
+      data: allCourse,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({
+      success: false,
+      msg: "Failed to Get Courses",
+    });
+  }
+};
+
 export const getAllCourses = async (req, res) => {
   try {
     const allCourse = await Course.find(
@@ -126,7 +159,7 @@ export const getAllCourses = async (req, res) => {
 export const getCourseDetails = async (req, res) => {
   try {
     const { courseId } = req.body;
-    console.log(courseId);
+    // console.log(courseId);
     let cId = new mongoose.Types.ObjectId(courseId)
     const courseDetails = await Course.findById({ _id: cId })
       .populate({
