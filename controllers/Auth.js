@@ -64,7 +64,7 @@ export const signUp = async (req, res) => {
       confirmPassword,
       accountType,
       phoneNo,
-      otp,
+      // otp,
     } = req.body;
 
     if (!firstName || !lastName || !email || !confirmPassword || !password) {
@@ -89,20 +89,20 @@ export const signUp = async (req, res) => {
       });
     }
 
-    const dbOtp = await Otp.find({ email }).sort({ createdAt: -1 }).limit(1);
-    console.log(dbOtp);
+    // const dbOtp = await Otp.find({ email }).sort({ createdAt: -1 }).limit(1);
+    // console.log(dbOtp);
 
-    if (dbOtp.length === 0) {
-      return res.status(400).json({
-        success: false,
-        msg: "OTP Not Found",
-      });
-    } else if ((otp !== dbOtp[0].otp)) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid Otp",
-      });
-    }
+    // if (dbOtp.length === 0) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     msg: "OTP Not Found",
+    //   });
+    // } else if ((otp !== dbOtp[0].otp)) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     msg: "Invalid Otp",
+    //   });
+    // }
 
     const hashPass = await bcrypt.hash(password, 10);
 
@@ -146,7 +146,7 @@ export const logIn = async (req, res) => {
         msg: "All the fields are required",
       });
     }
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email }).populate("additionalDetail");
     console.log(user)
     if (!user) {
       return res.status(400).json({
