@@ -5,7 +5,9 @@ import {User} from "../models/user.model.js";
 export const updateProfile = async (req, res) => {
     try {
         const {gender, dateOfBirth="", about="", contactNo} = req.body
+        console.log(gender, dateOfBirth, about, contactNo)
         const userId = req.user.id
+        console.log(userId)
 
         if(!gender || !contactNo || !userId){
             return res.status(400).json({
@@ -14,6 +16,7 @@ export const updateProfile = async (req, res) => {
             })
         }
         const uId = new mongoose.Types.ObjectId(userId)
+        console.log(uId)
         const userDetails = await User.findById({_id: uId})
         const profileId = userDetails.additionalDetail;
 
@@ -25,11 +28,15 @@ export const updateProfile = async (req, res) => {
         profileDetails.contactNo = contactNo
 
         await profileDetails.save();
+        const updatedUserDetails = await User.findById(uId)
+        .populate("additionalDetail")
+        .exec()
 
         return res.status(200).json({
             sucess: true,
             msg: "Profile Updated Successfully",
-            profileDetails
+            profileDetails,
+            updatedUserDetails
         })
         
     } catch (error) {

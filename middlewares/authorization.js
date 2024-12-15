@@ -8,7 +8,7 @@ dotenv.config({
 export const auth = async (req, res, next) => {
      try {
         const token = req.cookies.token || req.header("Authorization").replace("Bearer ", "") || req.body.token
-        
+        console.log(token)
         if(!token){
             return res.status(500).json({
                 success: false,
@@ -20,7 +20,8 @@ export const auth = async (req, res, next) => {
             console.log(payload)
             req.user = payload;
         } catch (error) {
-            return res.status(500).json({
+            console.log(error.message)
+            return res.status(401).json({
                 success: false,
                 msg: "Token is Invalid"
             })
