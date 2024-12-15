@@ -159,7 +159,7 @@ export const getAllCourses = async (req, res) => {
 export const getCourseDetails = async (req, res) => {
   try {
     const { courseId } = req.body;
-    console.log(courseId);
+    // console.log(courseId);
     let cId = new mongoose.Types.ObjectId(courseId)
     const courseDetails = await Course.findById({ _id: cId })
       .populate({

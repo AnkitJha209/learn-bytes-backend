@@ -1,5 +1,6 @@
 import mongoose, {Schema} from "mongoose";
 import  {sendMail}  from "../utils/mailSender.js";
+import { otpTemplate } from "../mailTemplate/emailVerification.js";
 
 const otpSchema = new Schema({
     email: {
@@ -19,7 +20,7 @@ const otpSchema = new Schema({
 
  function sendVerificationEmail(email, otp) {
     try{
-        const mailResponse  = sendMail(email, "Verification Email From LearnBytes", otp)
+        const mailResponse  = sendMail(email, "Verification Email From LearnBytes", otpTemplate(otp))
         console.log("Email sent Successfully: ", mailResponse)
 
     }catch(err){
